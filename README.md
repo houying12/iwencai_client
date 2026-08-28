@@ -14,17 +14,14 @@
 ## 安装
 
 ```bash
-# 方式一：从 PyPI 安装（发布后可用）
-pip install iwencai-client
-
-# 方式二：从源码安装
+# 1. 获取代码
 git clone https://github.com/houying12/iwencai_client.git
-cd iwencai_client
-pip install -e .
 
-# 依赖（如尚未安装）
+# 2. 安装依赖（仅 requests 和 pandas）
 pip install requests pandas
 ```
+
+**使用方式**：clone 后，把仓库中 `iwencai_client` 包目录（内含 `__init__.py`、`client.py`、`_api.py`、`_utils.py`）整体复制到你的项目目录下（与你的脚本同级），即可直接 `import` 使用。
 
 ## 快速开始
 
@@ -45,14 +42,7 @@ print(df)
 
 ## API 文档
 
-### `IWencaiClient`
-
-```python
-IWencaiClient(base_url="https://openapi.iwencai.com",
-              timeout=30, max_pages=10, retries=3, sleep=0.3)
-```
-
-连接级配置在实例化时设置一次即可。
+使用方法可参考`demo.py` 文件
 
 ### `get()`
 
@@ -69,7 +59,7 @@ get(query, api_key, sort_key=None, sort_order="asc", page=1, perpage=100) -> pd.
 | `page` | ❌ | 查询页数，默认 1（保留参数，当前实现为全量拉取） |
 | `perpage` | ❌ | 每页条数，默认 100；问财上限 100，超限自动钳制 |
 
-**返回值**：清洗后的 `pandas.DataFrame`（全量结果，已按 `sort_key`/`sort_order` 排序）。
+**返回值**：清洗后的 `pandas.DataFrame`（全量结果，可按 `sort_key`/`sort_order` 排序）。
 
 **异常**：`ValueError`（参数不合法）、`KeyError`（`sort_key` 不是返回列名，错误信息会列出可用列）、`IWencaiAPIError`（网关/网络错误）。
 
@@ -79,7 +69,10 @@ get(query, api_key, sort_key=None, sort_order="asc", page=1, perpage=100) -> pd.
 
 ## 获取 API Key
 
-> **待补充**：在此填写 IWENCAI_API_KEY 的获取方式（作者填写）。
+> 1、先打开同花顺问财官网：https://www.iwencai.com/screener
+> 2、点击**SkillHub**
+> 3、找到**问财选 A 股**点击
+> 4、在弹出的卡片中找到**IWENCAI_API_KEY=**，后续内容就是所需要用到的Key
 
 ## 与 pywencai 的区别
 
@@ -87,8 +80,8 @@ get(query, api_key, sort_key=None, sort_order="asc", page=1, perpage=100) -> pd.
 |---|---|---|
 | 数据通道 | 同花顺问财**官方 OpenAPI**（API Key 鉴权） | 问财 Web 接口（爬虫式） |
 | 稳定性 | 官方网关，规范稳定 | 依赖网页接口，可能受调整影响 |
-| 返回 | 规整 DataFrame + 全量翻页 + 字段清洗 | 原始 JSON，需自行处理 |
-| 依赖 | `requests` + `pandas` | 其他（略） |
+| 返回 | 规整 DataFrame + 全量翻页 + 字段清洗 | DataFrame |
+| 依赖 | `requests` + `pandas` |  |
 
 ## 数据来源与免责声明
 
