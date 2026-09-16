@@ -28,11 +28,14 @@ class IWencaiAPIError(Exception):
         response: 网关原始响应(JSON dict 或文本)
     """
 
-    def __init__(self, message: str, status_code: int = None, response=None):
+    def __init__(self, message: str, status_code: int = None, response=None,
+                 trace_id: str = None, retryable: bool = False):
         super().__init__(message)
         self.message = message
         self.status_code = status_code
         self.response = response
+        self.trace_id = trace_id
+        self.retryable = retryable
 
 
 def build_headers(api_key: str, call_type: str = "normal") -> dict:

@@ -40,6 +40,50 @@ df = client.get(
 print(df)
 ```
 
+## 增量增强接口
+
+本分支在保留原有 `IWencaiClient.get()`、`_api.py`、`_utils.py` 和 `demo.py`
+的基础上，增加了可测试的增强接口。原有调用方式继续可用，不要求现有调用方迁移。
+
+### 使用环境变量配置
+
+```powershell
+pip install -e .
+$env:IWENCAI_API_KEY = "your-api-key"
+```
+
+可以直接使用新增的 `OpenAPIClient`：
+
+```python
+from iwencai_client import OpenAPIClient
+
+client = OpenAPIClient.from_env()
+result = client.query("今日涨停，非ST")
+
+print(result.code_count)
+print(result.complete)
+print(result.to_dataframe().head())
+```
+
+也可以继续使用原有的 `IWencaiClient`，通过 `from_env()` 获得增强的
+`query()` 接口；原有的 `get(query, api_key, ...)` 接口保持不变：
+
+```python
+from iwencai_client import IWencaiClient
+
+client = IWencaiClient.from_env()
+result = client.query("今日涨停，非ST")
+```
+
+增强接口提供分页结果、原始响应元数据、结构化错误和明确的分页上限异常。
+它只调用官方 OpenAPI，不负责下游筛选流程、缓存或业务预算。
+
+### 本地测试
+
+```powershell
+python -m unittest discover -s tests -v
+```
+
 ## API 文档
 
 使用方法可参考`demo.py` 文件

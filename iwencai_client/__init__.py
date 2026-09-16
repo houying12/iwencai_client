@@ -16,6 +16,17 @@
 """
 from ._api import IWencaiAPIError
 from .client import IWencaiClient
+from .enhanced import OpenAPIClient
+from .errors import ConfigurationError, InvalidResponseError, PaginationLimitError
+from .models import QueryResult
 
 __version__ = "0.1.0"
-__all__ = ["IWencaiClient", "IWencaiAPIError"]
+__all__ = [
+    "ConfigurationError",
+    "InvalidResponseError",
+    "IWencaiAPIError",
+    "IWencaiClient",
+    "OpenAPIClient",
+    "PaginationLimitError",
+    "QueryResult",
+]
