@@ -8,6 +8,8 @@
 - page 参数保留在签名中(兼容接口设计); 当前实现为全量拉取, page 未启用
 """
 import logging
+import os
+import time
 from typing import Optional
 
 import pandas as pd
@@ -56,6 +58,59 @@ class IWencaiClient:
         self.max_pages = max_pages
         self.retries = retries
         self.sleep = sleep
+
+    @classmethod
+    def from_env(cls, *, dotenv_path: str = None, **kwargs):
+        """从环境变量创建兼容客户端；原有显式 api_key 用法保持不变。"""
+        if dotenv_path is not None:
+            try:
+                from dotenv import load_dotenv
+            except ImportError as exc:
+                raise ValueError("dotenv_path 需要安装 python-dotenv") from exc
+            load_dotenv(dotenv_path, override=False)
+
+        api_key = kwargs.pop("api_key", None) or os.getenv("IWENCAI_API_KEY")
+        if not api_key:
+            raise ValueError("需要 IWENCAI_API_KEY，或显式传入 api_key")
+        client = cls(
+            base_url=kwargs.pop("base_url", None) or os.getenv(
+                "IWENCAI_BASE_URL", DEFAULT_BASE_URL
+            ),
+            timeout=kwargs.pop("timeout", DEFAULT_TIMEOUT),
+            max_pages=kwargs.pop("max_pages", DEFAULT_MAX_PAGES),
+            retries=kwargs.pop("retries", DEFAULT_RETRIES),
+            sleep=kwargs.pop("page_delay", kwargs.pop("sleep", DEFAULT_SLEEP)),
+        )
+        client._api_key = api_key
+        client._page_size = kwargs.pop("page_size", 100)
+        client._session = kwargs.pop("session", None)
+        client._sleeper = kwargs.pop("sleeper", time.sleep)
+        if kwargs:
+            raise TypeError(f"不支持的配置项: {', '.join(sorted(kwargs))}")
+        return client
+
+    def query(self, query: str, *, page_size: int = None,
+              max_pages: int = None, call_type: str = "normal"):
+        """使用环境变量配置的增强查询接口；旧 get() 不受影响。"""
+        from .enhanced import OpenAPIClient
+
+        api_key = getattr(self, "_api_key", None)
+        if api_key is None:
+            raise ValueError("query() 需要先通过 from_env() 配置 API Key")
+        enhanced = OpenAPIClient(
+            api_key=api_key,
+            base_url=self.base_url,
+            timeout=self.timeout,
+            page_size=getattr(self, "_page_size", 100),
+            max_pages=self.max_pages,
+            retries=self.retries,
+            page_delay=self.sleep,
+            session=getattr(self, "_session", None),
+            sleeper=getattr(self, "_sleeper", time.sleep),
+        )
+        return enhanced.query(
+            query, page_size=page_size, max_pages=max_pages, call_type=call_type
+        )
 
     def get(self, query: str, api_key: str, sort_key: Optional[str] = None,
             sort_order: str = "asc", page: int = 1, perpage: int = 100) -> pd.DataFrame:
