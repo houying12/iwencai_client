@@ -1,3 +1,5 @@
+> ⚠️ 由于同花顺 API 限制了免费用户的调用次数，所以有需求的朋友可以看看我的另一个仓库：pywencai-fix，地址：https://github.com/houying12/pywencai-fix，对 pywencai 项目进行了修复。
+
 # iwencai-client
 
 问财（iWencai）A 股智能选股客户端 —— 基于**同花顺问财官方 OpenAPI**，用自然语言查询即可筛选 A 股股票，自动翻页拉全量，返回规整的 **pandas DataFrame**。
