@@ -1,4 +1,5 @@
-> ⚠️ 由于同花顺 API 限制了免费用户的调用次数，所以有需求的朋友可以看看我的另一个仓库：pywencai-fix，地址：https://github.com/houying12/pywencai-fix，对 pywencai 项目进行了修复。
+> ⚠️ 由于同花顺 API 限制了免费用户的调用次数，所以有需求的朋友可以看看我的另一个仓库：pywencai-fix，地址：https://github.com/houying12/pywencai-fix
+    对 pywencai 项目进行了修复。
 
 # iwencai-client
 
